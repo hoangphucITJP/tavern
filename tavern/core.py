@@ -1,20 +1,18 @@
+import json
 import logging
-import warnings
 import os
+import warnings
 from copy import deepcopy
 
 import pytest
-
-from contextlib2 import ExitStack
 from box import Box
-
-from .util import exceptions
-from .util.dict_util import format_keys
-from .util.delay import delay
+from contextlib2 import ExitStack
 
 from .plugins import get_extra_sessions, get_request_type, get_verifiers, get_expected
 from .schemas.files import wrapfile
-
+from .util import exceptions
+from .util.delay import delay
+from .util.dict_util import format_keys
 
 logger = logging.getLogger(__name__)
 
@@ -169,6 +167,9 @@ def run_stage(sessions, stage, tavern_box, test_block_config):
 
     logger.info("Running stage : %s", name)
     response = r.run()
+    json_response = response.json()
+    pretty_json_response = json.dumps(json_response, sort_keys=True, indent=4, separators=(',', ': '))
+    logger.info('Real response: \n%s' % pretty_json_response)
 
     verifiers = get_verifiers(stage, test_block_config, sessions, expected)
     for v in verifiers:
